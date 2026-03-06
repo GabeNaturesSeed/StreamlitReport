@@ -1,0 +1,41 @@
+name: Fetch WooCommerce Data
+
+on:
+  schedule:
+    - cron: "0 13 * * *"  # 6am MT = 1pm UTC
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch data
+        env:
+          WC_URL: ${{ secrets.WC_URL }}
+          WC_KEY: ${{ secrets.WC_KEY }}
+          WC_SECRET: ${{ secrets.WC_SECRET }}
+          DEFAULT_MARGIN: ${{ secrets.DEFAULT_MARGIN }}
+        run: python fetch_data.py
+
+      - name: Commit and push cache
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cache/
+          if ! git diff --cached --quiet; then
+            git commit -m "Update cached data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          else
+            echo "No changes to commit"
+          fi
