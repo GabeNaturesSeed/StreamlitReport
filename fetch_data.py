@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 WC_URL = os.getenv("WC_URL", "https://naturesseed.com/wp-json/wc/v3")
 WC_KEY = os.getenv("WC_KEY")
 WC_SECRET = os.getenv("WC_SECRET")
-DEFAULT_MARGIN = float(os.getenv("DEFAULT_MARGIN", "0.5"))
+DEFAULT_MARGIN = float(os.getenv("DEFAULT_MARGIN") or "0.5")
 
 CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
 COGS_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Cost per SKU.csv")
